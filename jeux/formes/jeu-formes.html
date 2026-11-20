@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Les formes - Les jeux de Maître Pierre</title>
+<style>
+  :root{
+    --bg1:#e8f4ff; --bg2:#fff6dc; --ink:#23324a; --accent:#2f7de1; --good:#2fb36a; --bad:#e8574f;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}
+  html,body{margin:0;height:100%;font-family:"Trebuchet MS","Segoe UI",Verdana,sans-serif;color:var(--ink);
+    background:linear-gradient(160deg,var(--bg1),var(--bg2));overflow-x:hidden}
+  #app{min-height:100%;display:flex;flex-direction:column;align-items:center;padding:14px 12px 24px}
+  h1{font-size:clamp(30px,6vmin,56px);margin:6px 0 2px;text-align:center}
+  .sub{font-size:clamp(14px,2.4vmin,20px);opacity:.7;margin:0 0 16px;text-align:center}
+  .menu{display:flex;flex-wrap:wrap;gap:16px;justify-content:center;max-width:980px}
+  .mbtn{background:#fff;border:0;border-radius:26px;box-shadow:0 6px 0 #c9d6e8,0 10px 24px rgba(40,70,120,.15);
+    padding:14px 16px 12px;width:clamp(150px,29vmin,250px);cursor:pointer;font:inherit;color:inherit;
+    display:flex;flex-direction:column;align-items:center;gap:6px;transition:transform .12s}
+  .mbtn:active{transform:translateY(4px);box-shadow:0 2px 0 #c9d6e8}
+  .mbtn .icons{display:flex;gap:2px;height:clamp(44px,9vmin,72px)}
+  .mbtn .icons svg{height:100%;width:auto}
+  .mbtn b{font-size:clamp(18px,3.2vmin,26px)}
+  .mbtn small{font-size:clamp(12px,2vmin,16px);opacity:.6}
+  .bar{width:100%;max-width:980px;display:flex;align-items:center;gap:10px;margin-bottom:8px}
+  .round{background:#fff;border:0;border-radius:50%;width:clamp(48px,8vmin,64px);height:clamp(48px,8vmin,64px);
+    box-shadow:0 4px 0 #c9d6e8;font-size:clamp(22px,4vmin,30px);cursor:pointer;color:var(--ink);flex:none}
+  .round:active{transform:translateY(3px);box-shadow:none}
+  .dots{flex:1;display:flex;gap:6px;justify-content:center;flex-wrap:wrap}
+  .dot{width:clamp(14px,2.6vmin,22px);height:clamp(14px,2.6vmin,22px);border-radius:50%;background:#cfd9e8}
+  .dot.now{background:var(--accent);transform:scale(1.25)}
+  .dot.ok{background:#ffc928}
+  .dot.done{background:#9bd8b4}
+  .prompt{font-size:clamp(28px,6.4vmin,58px);font-weight:700;margin:6px 0 14px;text-align:center}
+  .tiles{display:flex;flex-wrap:wrap;gap:clamp(12px,3vmin,28px);justify-content:center;align-items:center;max-width:980px}
+  .tile{background:#fff;border:0;border-radius:28px;box-shadow:0 7px 0 #c9d6e8,0 12px 28px rgba(40,70,120,.15);
+    width:clamp(120px,27vmin,250px);aspect-ratio:1/1;padding:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;
+    transition:transform .12s}
+  .tiles.four .tile{width:clamp(100px,21vmin,210px)}
+  .tile svg{width:100%;height:100%;overflow:visible}
+  .tile:active{transform:translateY(4px)}
+  .tile.good{outline:8px solid var(--good);animation:pop .5s}
+  .tile.bad{outline:8px solid var(--bad);animation:shake .4s}
+  .tile.hint{animation:pulse .8s infinite}
+  .tile.dim{opacity:.35}
+  @keyframes pop{0%{transform:scale(1)}50%{transform:scale(1.14)}100%{transform:scale(1)}}
+  @keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-12px)}40%{transform:translateX(12px)}60%{transform:translateX(-8px)}80%{transform:translateX(8px)}}
+  @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.1)}}
+  .bigshape{width:clamp(180px,38vmin,340px);aspect-ratio:1/1;background:#fff;border-radius:34px;padding:14px;margin:4px 0 16px;
+    box-shadow:0 7px 0 #c9d6e8,0 12px 28px rgba(40,70,120,.15)}
+  .bigshape svg{width:100%;height:100%}
+  .choices{display:flex;gap:clamp(12px,3vmin,28px);flex-wrap:wrap;justify-content:center}
+  .cbtn{background:#fff;border:0;border-radius:26px;box-shadow:0 7px 0 #c9d6e8;padding:12px 18px;cursor:pointer;font:inherit;color:inherit;
+    display:flex;flex-direction:column;align-items:center;gap:6px;width:clamp(150px,30vmin,260px)}
+  .cbtn svg{height:clamp(54px,12vmin,100px);width:auto}
+  .cbtn b{font-size:clamp(20px,4vmin,34px)}
+  .cbtn.good{outline:8px solid var(--good);animation:pop .5s}
+  .cbtn.bad{outline:8px solid var(--bad);animation:shake .4s}
+  .cbtn.hint{animation:pulse .8s infinite}
+  .section{width:100%;max-width:980px;margin:6px 0 4px;font-size:clamp(20px,3.6vmin,30px);font-weight:700}
+  .name{font-size:clamp(18px,3.4vmin,28px);font-weight:700;text-align:center;margin-top:4px}
+  .dtile{flex-direction:column;gap:2px;aspect-ratio:auto;padding:10px 10px 8px;width:clamp(110px,22vmin,190px)}
+  .dtile .art{width:100%;aspect-ratio:1/1}
+  .dtile .art svg{width:100%;height:100%}
+  .card{position:fixed;inset:0;background:rgba(30,45,75,.55);display:flex;align-items:center;justify-content:center;z-index:10;padding:16px}
+  .card .box{background:#fff;border-radius:34px;padding:20px 24px;max-width:520px;width:100%;text-align:center;box-shadow:0 14px 40px rgba(0,0,0,.3)}
+  .card .box .bigshape{margin:0 auto 10px;box-shadow:none;background:#f3f8ff}
+  .card h2{font-size:clamp(32px,6vmin,48px);margin:4px 0}
+  .card p{font-size:clamp(18px,3.4vmin,26px);margin:6px 0 14px}
+  .end{text-align:center;margin-top:24px}
+  .stars{font-size:clamp(36px,8vmin,70px);letter-spacing:4px;margin:12px 0 20px}
+  .big{background:var(--accent);color:#fff;border:0;border-radius:26px;font:inherit;font-weight:700;font-size:clamp(22px,4vmin,32px);
+    padding:14px 30px;margin:6px;box-shadow:0 6px 0 #1f5fb3;cursor:pointer}
+  .big.alt{background:#fff;color:var(--ink);box-shadow:0 6px 0 #c9d6e8}
+  .big:active{transform:translateY(4px);box-shadow:none}
+  #conf{position:fixed;inset:0;pointer-events:none;z-index:20}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<canvas id="conf"></canvas>
+
+<script>
+/* ---------- Dessin des formes (SVG) ---------- */
+var uidN = 0;
+function uid(){ return 'g' + (++uidN); }
+function col(h,l){ return 'hsl(' + h + ',72%,' + l + '%)'; }
+
+var PLANES = [
+  {id:'carre', art:'le', nom:'carré', cap:'Il a quatre côtés égaux.',
+    draw:function(h){ return '<rect x="20" y="20" width="60" height="60" rx="3" fill="'+col(h,58)+'" stroke="'+col(h,38)+'" stroke-width="3"/>'; }},
+  {id:'rectangle', art:'le', nom:'rectangle', cap:'Il a quatre côtés : deux longs et deux courts.',
+    draw:function(h){ return '<rect x="8" y="29" width="84" height="42" rx="3" fill="'+col(h,58)+'" stroke="'+col(h,38)+'" stroke-width="3"/>'; }},
+  {id:'triangle', art:'le', nom:'triangle', cap:'Il a trois côtés.',
+    draw:function(h){ return '<polygon points="50,5 90,73 10,73" stroke-linejoin="round" fill="'+col(h,58)+'" stroke="'+col(h,38)+'" stroke-width="3"/>'; }},
+  {id:'cercle', art:'le', nom:'cercle', cap:'C’est juste la ligne qui fait un rond.',
+    draw:function(h){ return '<circle cx="50" cy="50" r="38" fill="none" stroke="'+col(h,52)+'" stroke-width="8"/>'; }},
+  {id:'disque', art:'le', nom:'disque', cap:'C’est un rond tout rempli.',
+    draw:function(h){ return '<circle cx="50" cy="50" r="39" fill="'+col(h,58)+'" stroke="'+col(h,38)+'" stroke-width="3"/>'; }},
+  {id:'losange', art:'le', nom:'losange', cap:'',
+    draw:function(h){ return '<polygon points="50,8 84,50 50,92 16,50" stroke-linejoin="round" fill="'+col(h,58)+'" stroke="'+col(h,38)+'" stroke-width="3"/>'; }},
+  {id:'trapeze', art:'le', nom:'trapèze', cap:'',
+    draw:function(h){ return '<polygon points="30,25 70,25 92,76 8,76" stroke-linejoin="round" fill="'+col(h,58)+'" stroke="'+col(h,38)+'" stroke-width="3"/>'; }}
+];
+PLANES.forEach(function(s){ s.kind='plane'; });
+/* positions possibles de chaque forme plane (en degrés) : une même forme n'est pas toujours posée pareil */
+var ANGLES={carre:[0,15,30,45,60,75], rectangle:[90,90,90,80,100,0,60], triangle:[0,180,90,270,30,150,210,330],
+  losange:[0,90,35,-35,60,120,150], trapeze:[0,180,90,270,40,220], cercle:[0], disque:[0]};
+PLANES.forEach(function(s){ s.angles=ANGLES[s.id]; });
+function angOf(s){ return s.angles ? s.angles[rnd(s.angles.length)] : 0; }
+
+var SOLIDS = [
+  {id:'sphere', art:'la', nom:'sphère', cap:'Elle roule dans tous les sens, comme une balle.',
+    draw:function(h){ var g=uid();
+      return '<defs><radialGradient id="'+g+'" cx="35%" cy="30%" r="75%"><stop offset="0" stop-color="'+col(h,88)+'"/><stop offset="0.55" stop-color="'+col(h,55)+'"/><stop offset="1" stop-color="'+col(h,32)+'"/></radialGradient></defs>'+
+        '<circle cx="50" cy="50" r="40" fill="url(#'+g+')"/>'+
+        '<ellipse cx="37" cy="33" rx="9" ry="6" fill="#fff" opacity=".45" transform="rotate(-30 37 33)"/>'; }},
+  {id:'cylindre', art:'le', nom:'cylindre', cap:'Il roule, et il peut se tenir debout, comme une boîte de conserve.',
+    draw:function(h){ var g=uid();
+      return '<defs><linearGradient id="'+g+'" x1="0" x2="1"><stop offset="0" stop-color="'+col(h,66)+'"/><stop offset="0.45" stop-color="'+col(h,56)+'"/><stop offset="1" stop-color="'+col(h,36)+'"/></linearGradient></defs>'+
+        '<path d="M22,26 L22,76 A28,12 0 0 0 78,76 L78,26 Z" fill="url(#'+g+')"/>'+
+        '<ellipse cx="50" cy="26" rx="28" ry="12" fill="'+col(h,78)+'" stroke="'+col(h,45)+'" stroke-width="1.5"/>'; }},
+  {id:'cone', art:'le', nom:'cône', cap:'Il a une pointe, comme un chapeau de fête.',
+    draw:function(h){ var g=uid();
+      return '<defs><linearGradient id="'+g+'" x1="0" x2="1"><stop offset="0" stop-color="'+col(h,68)+'"/><stop offset="0.45" stop-color="'+col(h,56)+'"/><stop offset="1" stop-color="'+col(h,34)+'"/></linearGradient></defs>'+
+        '<path d="M50,8 L84,76 A34,13 0 0 1 16,76 Z" fill="url(#'+g+')" stroke-linejoin="round"/>'; }},
+  {id:'pave', art:'le', nom:'pavé droit', cap:'Il a des faces rectangulaires, comme une boîte.',
+    draw:function(h){
+      return '<polygon points="8,40 30,20 92,20 70,40" fill="'+col(h,76)+'" stroke="'+col(h,35)+'" stroke-width="1.5" stroke-linejoin="round"/>'+
+        '<polygon points="8,40 70,40 70,82 8,82" fill="'+col(h,56)+'" stroke="'+col(h,35)+'" stroke-width="1.5" stroke-linejoin="round"/>'+
+        '<polygon points="70,40 92,20 92,62 70,82" fill="'+col(h,38)+'" stroke="'+col(h,30)+'" stroke-width="1.5" stroke-linejoin="round"/>'; }},
+  {id:'cube', art:'le', nom:'cube', cap:'Il a six faces carrées, comme un dé.',
+    draw:function(h){
+      return '<polygon points="50,10 86,28 50,46 14,28" fill="'+col(h,76)+'" stroke="'+col(h,35)+'" stroke-width="1.5" stroke-linejoin="round"/>'+
+        '<polygon points="14,28 50,46 50,90 14,72" fill="'+col(h,56)+'" stroke="'+col(h,35)+'" stroke-width="1.5" stroke-linejoin="round"/>'+
+        '<polygon points="50,46 86,28 86,72 50,90" fill="'+col(h,38)+'" stroke="'+col(h,30)+'" stroke-width="1.5" stroke-linejoin="round"/>'; }},
+  {id:'tetraedre', art:'le', nom:'tétraèdre', cap:'',
+    draw:function(h){
+      return '<polygon points="50,10 10,80 50,58" fill="'+col(h,70)+'" stroke="'+col(h,32)+'" stroke-width="1.5" stroke-linejoin="round"/>'+
+        '<polygon points="50,10 50,58 90,80" fill="'+col(h,52)+'" stroke="'+col(h,32)+'" stroke-width="1.5" stroke-linejoin="round"/>'+
+        '<polygon points="10,80 50,58 90,80" fill="'+col(h,36)+'" stroke="'+col(h,28)+'" stroke-width="1.5" stroke-linejoin="round"/>'; }},
+  {id:'pyramide', art:'la', nom:'pyramide', cap:'',
+    draw:function(h){
+      return '<polygon points="50,8 10,70 52,90" fill="'+col(h,62)+'" stroke="'+col(h,35)+'" stroke-width="1.5" stroke-linejoin="round"/>'+
+        '<polygon points="50,8 52,90 92,66" fill="'+col(h,40)+'" stroke="'+col(h,30)+'" stroke-width="1.5" stroke-linejoin="round"/>'; }}
+];
+SOLIDS.forEach(function(s){ s.kind='solid'; });
+
+function svgOf(shape,h,ang,css){
+  var inner=shape.draw(h);
+  if(shape.kind==='plane'){
+    if(css) inner='<g id="rg" style="transform-box:view-box;transform-origin:50% 50%;transition:transform .6s;transform:rotate('+(ang||0)+'deg)">'+inner+'</g>';
+    else if(ang) inner='<g transform="rotate('+ang+' 50 50)">'+inner+'</g>';
+  }
+  return '<svg viewBox="0 0 100 100" aria-hidden="true">' + inner + '</svg>';
+}
+function cap1(s){ return s.charAt(0).toUpperCase() + s.slice(1); }
+function label(s){ return s.art + ' ' + s.nom; }
+
+/* ---------- Utilitaires ---------- */
+function shuffle(a){ a=a.slice(); for(var i=a.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=a[i]; a[i]=a[j]; a[j]=t; } return a; }
+function rnd(n){ return Math.floor(Math.random()*n); }
+function hues(n){ var base=rnd(360), out=[]; for(var i=0;i<n;i++) out.push((base + i*(360/n) + rnd(30)) % 360); return shuffle(out); }
+var app = document.getElementById('app');
+var timers = [];
+function later(fn,ms){ var t=setTimeout(fn,ms); timers.push(t); return t; }
+function clearTimers(){ timers.forEach(clearTimeout); timers=[]; }
+
+/* ---------- Voix : enregistrements du maître (dossier audio/), sinon synthèse ---------- */
+var TXT = {touche:'Touche', bravo:'Bravo !', non:'Ce n\u2019est pas ça. Essaie encore.',
+  question:'Est-ce une forme plane ou un solide ?', est_plane:'est une forme plane.', est_solide:'est un solide.',
+  fin_top:'Bravo ! Tu connais très bien les formes !', fin_ok:'Bravo ! Tu as bien travaillé.'};
+PLANES.concat(SOLIDS).forEach(function(s){ TXT['n_'+s.id]=s.art+' '+s.nom; if(s.cap) TXT['c_'+s.id]=s.cap; });
+var EXTS=['m4a','mp3','webm','ogg'], GOOD={}, MISSING={};
+var voice=null, seq=0, curAudio=null;
+function pickVoice(){
+  if(!window.speechSynthesis) return;
+  var v=speechSynthesis.getVoices();
+  voice=v.filter(function(x){return /^fr[-_]FR/i.test(x.lang);})[0]||v.filter(function(x){return /^fr/i.test(x.lang);})[0]||null;
+}
+if(window.speechSynthesis){ pickVoice(); speechSynthesis.onvoiceschanged=pickVoice; }
+function stopAll(){
+  seq++;
+  try{ if(curAudio){ curAudio.onended=null; curAudio.onerror=null; curAudio.pause(); } }catch(e){}
+  try{ if(window.speechSynthesis) speechSynthesis.cancel(); }catch(e){}
+}
+function tts(k,my,done){
+  try{
+    if(!window.speechSynthesis){ return done(); }
+    var u=new SpeechSynthesisUtterance(TXT[k]); u.lang='fr-FR'; if(voice) u.voice=voice; u.rate=0.85;
+    u.onend=function(){ if(my===seq) done(); }; u.onerror=u.onend;
+    speechSynthesis.speak(u);
+  }catch(e){ done(); }
+}
+function playKey(k,my,done){
+  if(MISSING[k]) return tts(k,my,done);
+  var order=GOOD[k]?[GOOD[k]]:EXTS;
+  (function tryExt(n){
+    if(my!==seq) return;
+    if(n>=order.length){ MISSING[k]=true; return tts(k,my,done); }
+    var a=new Audio('audio/'+k+'.'+order[n]); curAudio=a;
+    a.onended=function(){ if(my===seq) done(); };
+    a.onerror=function(){ tryExt(n+1); };
+    a.onplaying=function(){ GOOD[k]=order[n]; };
+    var pr=a.play();
+    if(pr&&pr.catch) pr.catch(function(err){ if(err&&err.name==='NotAllowedError') tts(k,my,done); });
+  })(0);
+}
+function play(keys,cb){
+  stopAll(); var my=seq, i=0, fired=false;
+  function fin(){ if(fired||my!==seq) return; fired=true; if(cb) cb(); }
+  (function next(){ if(my!==seq) return; if(i>=keys.length) return fin(); playKey(keys[i++],my,next); })();
+  if(cb) setTimeout(fin,20000); // filet de sécurité si un son ne se termine jamais
+}
+
+/* ---------- Confettis ---------- */
+function confetti(){
+  var c=document.getElementById('conf'), x=c.getContext('2d');
+  c.width=innerWidth; c.height=innerHeight;
+  var ps=[]; for(var i=0;i<70;i++) ps.push({x:innerWidth/2,y:innerHeight/2.2,vx:(Math.random()-.5)*14,vy:-Math.random()*13-3,r:5+Math.random()*7,c:'hsl('+rnd(360)+',85%,60%)'});
+  var f=0;
+  (function step(){
+    x.clearRect(0,0,c.width,c.height);
+    ps.forEach(function(p){ p.x+=p.vx; p.y+=p.vy; p.vy+=0.45; x.fillStyle=p.c; x.beginPath(); x.arc(p.x,p.y,p.r,0,6.3); x.fill(); });
+    if(++f<70) requestAnimationFrame(step); else x.clearRect(0,0,c.width,c.height);
+  })();
+}
+
+/* ---------- Écrans ---------- */
+function icons(list,h0){
+  return list.map(function(s,i){ return svgOf(s,(h0+i*110)%360); }).join('');
+}
+function P(id){ return PLANES.filter(function(s){return s.id===id;})[0]; }
+function S(id){ return SOLIDS.filter(function(s){return s.id===id;})[0]; }
+
+function showMenu(){
+  clearTimers();
+  stopAll();
+  app.innerHTML =
+    '<h1>Les formes</h1><p class="sub">Touche un jeu pour commencer &middot; Tap a game to start</p>'+
+    '<div class="menu">'+
+      btn('discover',[P('carre'),P('triangle'),S('cube')],'Découvrir','Discover',200)+
+      btn('planes',[P('carre'),P('disque'),P('losange')],'Formes planes','Flat shapes',20)+
+      btn('solids',[S('sphere'),S('cone'),S('cube')],'Solides','Solid shapes',140)+
+      btn('mixed',[P('triangle'),S('cylindre'),P('trapeze')],'Tout mélangé','Mixed',300)+
+      btn('sort',[P('rectangle'),S('pave')],'Plane ou solide ?','Flat or solid?',80)+
+    '</div>';
+  app.querySelectorAll('.mbtn').forEach(function(b){
+    b.onclick=function(){
+      var m=b.getAttribute('data-m');
+      if(m==='discover') showDiscover();
+      else if(m==='sort') startSort();
+      else startGame(m);
+    };
+  });
+}
+function btn(m,list,fr,en,h0){
+  return '<button class="mbtn" data-m="'+m+'"><div class="icons">'+icons(list,h0)+'</div><b>'+fr+'</b><small>'+en+'</small></button>';
+}
+
+/* ----- Découvrir ----- */
+function showDiscover(){
+  clearTimers();
+  var hs = hues(14);
+  function tiles(list,off){
+    return list.map(function(s,i){
+      var a=angOf(s);
+      return '<button class="tile dtile" data-k="'+s.kind+'" data-id="'+s.id+'" data-h="'+hs[off+i]+'" data-ang="'+a+'"><div class="art">'+svgOf(s,hs[off+i],a)+'</div><div class="name">'+s.nom+'</div></button>';
+    }).join('');
+  }
+  app.innerHTML =
+    '<div class="bar"><button class="round" id="home" aria-label="Menu">&#8592;</button><div class="dots"></div></div>'+
+    '<div class="section">Les formes planes</div><div class="tiles">'+tiles(PLANES,0)+'</div>'+
+    '<div class="section" style="margin-top:18px">Les solides</div><div class="tiles">'+tiles(SOLIDS,7)+'</div>';
+  document.getElementById('home').onclick=showMenu;
+  app.querySelectorAll('.dtile').forEach(function(t){
+    t.onclick=function(){
+      var s=(t.getAttribute('data-k')==='plane'?P:S)(t.getAttribute('data-id'));
+      var h=+t.getAttribute('data-h'), ang=+t.getAttribute('data-ang'), turn=s.kind==='plane'&&s.angles.length>1;
+      var box=document.createElement('div'); box.className='card';
+      box.innerHTML='<div class="box"><div class="bigshape">'+svgOf(s,h,ang,true)+'</div><h2>'+cap1(label(s))+'</h2>'+(s.cap?'<p>'+s.cap+'</p>':'')+(turn?'<button class="big alt" id="turn">&#8635; Tourner</button>':'')+'<button class="big" id="ok">OK</button></div>';
+      document.body.appendChild(box);
+      var close=function(){ document.body.removeChild(box); stopAll(); };
+      box.querySelector('#ok').onclick=close;
+      if(turn){ box.querySelector('#turn').onclick=function(){ ang+=40; box.querySelector('#rg').style.transform='rotate('+ang+'deg)'; }; }
+      box.onclick=function(e){ if(e.target===box) close(); };
+      play(s.cap?['n_'+s.id,'c_'+s.id]:['n_'+s.id]);
+    };
+  });
+}
+
+/* ----- Jeu : touche la forme ----- */
+/* formes à ne pas proposer avec la cible : elles en sont un cas particulier (un carré est aussi un losange, un cube est aussi un pavé droit...) */
+var EXCL={losange:['carre'], rectangle:['carre'], trapeze:['carre','rectangle','losange'], pave:['cube'], pyramide:['tetraedre']};
+var G = null;
+var ROUNDS = 8;
+function startGame(mode){
+  clearTimers();
+  var pool = mode==='planes' ? PLANES : mode==='solids' ? SOLIDS : PLANES.concat(SOLIDS);
+  var targets = shuffle(pool).concat(shuffle(pool));
+  // éviter deux cibles identiques d'affilée
+  targets = targets.slice(0,ROUNDS);
+  G = {mode:mode,pool:pool,targets:targets,i:0,score:0,wrong:0,locked:false,stars:[]};
+  nextQuestion();
+}
+function nextQuestion(){
+  clearTimers();
+  if(G.i>=ROUNDS){ return showEnd(); }
+  var t = G.targets[G.i];
+  var nChoices = G.mode==='mixed' ? 4 : 3;
+  var ex=EXCL[t.id]||[];
+  var others = shuffle(G.pool.filter(function(s){return s.id!==t.id && ex.indexOf(s.id)<0;})).slice(0,nChoices-1);
+  var choices = shuffle([t].concat(others));
+  var hs = hues(choices.length);
+  G.cur = {t:t, choices:choices, wrong:0};
+  G.locked=false;
+  var dots=''; for(var k=0;k<ROUNDS;k++){ dots+='<span class="dot '+(k<G.i?(G.stars[k]?'ok':'done'):(k===G.i?'now':''))+'"></span>'; }
+  app.innerHTML =
+    '<div class="bar"><button class="round" id="home" aria-label="Menu">&#8592;</button><div class="dots">'+dots+'</div><button class="round" id="spk" aria-label="Réécouter">&#128266;</button></div>'+
+    '<div class="prompt">Touche '+label(t)+'</div>'+
+    '<div class="tiles'+(choices.length>3?' four':'')+'">'+choices.map(function(s,i){ return '<button class="tile" data-id="'+s.id+'">'+svgOf(s,hs[i],angOf(s))+'</button>'; }).join('')+'</div>';
+  document.getElementById('home').onclick=showMenu;
+  document.getElementById('spk').onclick=function(){ play(['touche','n_'+t.id]); };
+  app.querySelectorAll('.tile').forEach(function(b){ b.onclick=function(){ answer(b); }; });
+  later(function(){ play(['touche','n_'+t.id]); },350);
+}
+function answer(b){
+  if(G.locked) return;
+  var t=G.cur.t, ok=b.getAttribute('data-id')===t.id;
+  if(ok){
+    G.locked=true; b.classList.remove('hint'); b.classList.add('good');
+    app.querySelectorAll('.tile').forEach(function(x){ if(x!==b) x.classList.add('dim'); });
+    var first = G.cur.wrong===0; G.stars[G.i]=first; if(first) G.score++;
+    confetti();
+    play(['bravo','n_'+t.id],function(){ later(function(){ G.i++; nextQuestion(); },700); });
+  }else{
+    G.cur.wrong++;
+    b.classList.remove('bad'); void b.offsetWidth; b.classList.add('bad');
+    play(['non']);
+    if(G.cur.wrong>=2){
+      app.querySelectorAll('.tile').forEach(function(x){ if(x.getAttribute('data-id')===t.id) x.classList.add('hint'); });
+    }
+  }
+}
+
+/* ----- Jeu : plane ou solide ----- */
+function startSort(){
+  clearTimers();
+  var a = shuffle(PLANES).slice(0,4), b = shuffle(SOLIDS).slice(0,4);
+  var targets = shuffle(a.concat(b));
+  G = {mode:'sort',targets:targets,i:0,score:0,locked:false,stars:[]};
+  nextSort();
+}
+function nextSort(){
+  clearTimers();
+  if(G.i>=ROUNDS){ return showEnd(); }
+  var t=G.targets[G.i], h=rnd(360);
+  G.cur={t:t,wrong:0}; G.locked=false;
+  var dots=''; for(var k=0;k<ROUNDS;k++){ dots+='<span class="dot '+(k<G.i?(G.stars[k]?'ok':'done'):(k===G.i?'now':''))+'"></span>'; }
+  app.innerHTML =
+    '<div class="bar"><button class="round" id="home" aria-label="Menu">&#8592;</button><div class="dots">'+dots+'</div><button class="round" id="spk" aria-label="Réécouter">&#128266;</button></div>'+
+    '<div class="prompt">Plane ou solide ?</div>'+
+    '<div class="bigshape">'+svgOf(t,h,angOf(t))+'</div>'+
+    '<div class="choices">'+
+      '<button class="cbtn" data-a="plane"><svg viewBox="0 0 100 100">'+P('carre').draw(210)+'</svg><b>Forme plane</b></button>'+
+      '<button class="cbtn" data-a="solid"><svg viewBox="0 0 100 100">'+S('cube').draw(20)+'</svg><b>Solide</b></button>'+
+    '</div>';
+  document.getElementById('home').onclick=showMenu;
+  document.getElementById('spk').onclick=function(){ play(['question']); };
+  app.querySelectorAll('.cbtn').forEach(function(b){ b.onclick=function(){ answerSort(b); }; });
+  later(function(){ play(['question']); },350);
+}
+function answerSort(b){
+  if(G.locked) return;
+  var t=G.cur.t, ok=b.getAttribute('data-a')===t.kind;
+  if(ok){
+    G.locked=true; b.classList.remove('hint'); b.classList.add('good');
+    var first=G.cur.wrong===0; G.stars[G.i]=first; if(first) G.score++;
+    confetti();
+    play(['bravo','n_'+t.id,t.kind==='plane'?'est_plane':'est_solide'],function(){ later(function(){ G.i++; nextSort(); },900); });
+  }else{
+    G.cur.wrong++;
+    b.classList.remove('bad'); void b.offsetWidth; b.classList.add('bad');
+    play(['non']);
+    if(G.cur.wrong>=2){
+      app.querySelectorAll('.cbtn').forEach(function(x){ if(x.getAttribute('data-a')===t.kind) x.classList.add('hint'); });
+    }
+  }
+}
+
+/* ----- Fin ----- */
+function showEnd(){
+  clearTimers();
+  var s=''; for(var i=0;i<ROUNDS;i++){ s += G.stars[i] ? '⭐' : '☆'; }
+  app.innerHTML =
+    '<div class="end"><h1>Bravo !</h1><div class="stars">'+s+'</div>'+
+    '<button class="big" id="again">Rejouer</button><button class="big alt" id="menu">Menu</button></div>';
+  confetti();
+  play([G.score>=ROUNDS-1?'fin_top':'fin_ok']);
+  var mode=G.mode;
+  document.getElementById('again').onclick=function(){ if(mode==='sort') startSort(); else startGame(mode); };
+  document.getElementById('menu').onclick=showMenu;
+}
+
+showMenu();
+</script>
+<a href="../../index.html" aria-label="Retour aux jeux · Back to the games" title="Accueil · Home" style="position:fixed;left:10px;bottom:10px;z-index:99999;width:58px;height:58px;border-radius:50%;background:#ffcf3d;border:4px solid #1f3a5f;box-shadow:0 4px 0 #b8860b,0 6px 10px #0004;display:grid;place-items:center;text-decoration:none"><svg viewBox="0 0 48 48" width="34" height="34" aria-hidden="true"><path d="M6 23 24 7l18 16" fill="none" stroke="#1f3a5f" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><path d="M11 22v18h26V22L24 11z" fill="#fff" stroke="#1f3a5f" stroke-width="3" stroke-linejoin="round"/><rect x="21" y="29" width="7" height="11" rx="2" fill="#e4423f"/><circle cx="16" cy="25" r="1.8" fill="#1f3a5f"/><circle cx="32" cy="25" r="1.8" fill="#1f3a5f"/></svg></a></body>
+</html>

@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Les jeux de Maître Pierre</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&display=swap">
+<style>
+:root{--ink:#1f3a5f;--soft:#5a6f8a;--blue:#2457a6;--red:#e4423f;--sun:#ffcf3d;--card:#fff;
+ --voc:#2f80d1;--lec:#f08a24;--mat:#2fa36b}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;color:var(--ink);font:17px/1.5 "Andika","Trebuchet MS",system-ui,sans-serif;
+ background:
+  radial-gradient(circle at 8% 4%,#fff 0 60px,transparent 61px),
+  radial-gradient(circle at 14% 6%,#fff 0 40px,transparent 41px),
+  radial-gradient(circle at 92% 12%,#fff 0 55px,transparent 56px),
+  radial-gradient(circle at 86% 13%,#fff 0 38px,transparent 39px),
+  linear-gradient(#cfe9ff,#eef7ff 420px,#f7fbff)}
+/* ---------- bandeau ---------- */
+.tricolore{height:12px;background:linear-gradient(90deg,var(--blue) 0 33.3%,#fff 33.3% 66.6%,var(--red) 66.6%);box-shadow:0 2px 0 #0002}
+.hero{position:relative;height:clamp(170px,32vw,280px);background:#9fd0ff url(images/decor-france.jpg) center 45%/cover no-repeat}
+.hero::after{content:"";position:absolute;left:0;right:0;bottom:0;height:50px;background:linear-gradient(transparent,#f7fbff)}
+header{max-width:900px;margin:-60px auto 0;padding:0 16px 6px;text-align:center;position:relative;z-index:2}
+.titres{background:#fff;border:5px solid var(--blue);border-radius:30px;padding:14px 16px 16px;box-shadow:0 8px 0 var(--red);display:flex;align-items:center;justify-content:center;gap:18px;flex-wrap:wrap}
+.portrait{flex:none;width:clamp(96px,26vw,130px);aspect-ratio:1;border-radius:50%;border:5px solid var(--sun);box-shadow:0 4px 0 var(--blue);overflow:hidden;background:#f3ecd9}
+.portrait img{display:block;width:100%;height:100%;object-fit:cover;object-position:50% 50%;transform:scale(1.25);transform-origin:44% 62%}
+.txt{min-width:0}
+h1{margin:0;font-size:clamp(28px,7vw,48px);line-height:1.12;color:var(--blue);letter-spacing:-.5px}
+h1 .pierre{color:var(--red)}
+.metier{margin:8px 0 0;font-weight:700;font-size:clamp(16px,3.6vw,20px)}
+.metier span{display:inline-block;background:#eef7ff;border:3px solid var(--blue);border-radius:999px;padding:2px 14px;margin:3px 2px}
+main{max-width:900px;margin:0 auto;padding:6px 16px 48px}
+/* ---------- consignes ---------- */
+.help{background:var(--card);border:4px solid var(--sun);border-radius:26px;padding:16px 20px;margin:18px 0 6px;box-shadow:0 6px 0 #e9b92d}
+.help summary{cursor:pointer;font-weight:700;font-size:20px;color:var(--blue)}
+.help .cols{display:grid;gap:14px 28px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));margin-top:10px}
+.help h2{font-size:16px;margin:0 0 4px;color:var(--red);letter-spacing:.5px}
+.help ul{margin:0;padding-left:20px}
+.help li{margin:3px 0}
+.badge{display:inline-block;background:#fff4d1;border:2px solid var(--sun);border-radius:999px;padding:0 9px;font-size:13.5px;font-weight:700}
+/* ---------- domaines ---------- */
+section.domaine{margin-top:34px}
+.domaine>h2{display:flex;align-items:center;gap:12px;margin:0 0 2px;font-size:clamp(26px,5.5vw,36px);color:var(--c)}
+.domaine>h2 .pastille{width:54px;height:54px;border-radius:18px;background:var(--c);color:#fff;display:grid;place-items:center;font-size:30px;box-shadow:0 5px 0 var(--cd)}
+.domaine>h2 small{display:block;font-size:.5em;font-weight:400;color:var(--soft);line-height:1.1}
+.domaine h3{margin:20px 0 10px;font-size:18px;color:var(--ink)}
+.domaine h3 small{color:var(--soft);font-weight:400}
+.grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fill,minmax(250px,1fr))}
+a.jeu{position:relative;display:flex;gap:12px;align-items:center;background:var(--card);border:4px solid var(--c);border-radius:24px;padding:12px 14px;text-decoration:none;color:inherit;box-shadow:0 6px 0 var(--cd);transition:transform .12s}
+a.jeu:hover,a.jeu:focus-visible{transform:translateY(-3px) rotate(-.6deg);outline:none}
+a.jeu:active{transform:translateY(4px);box-shadow:0 2px 0 var(--cd)}
+.jeu .ico{flex:none;width:58px;height:58px;border-radius:50%;background:var(--bg);display:grid;place-items:center;font-size:32px}
+.jeu .txt{min-width:0}
+.jeu .t{display:block;font-weight:700;font-size:19px;line-height:1.2}
+.jeu .d{display:block;font-size:14.5px;color:var(--soft);line-height:1.3;margin-top:2px}
+.jeu .mic{position:absolute;right:-6px;top:-10px;background:var(--sun);border:3px solid var(--ink);border-radius:999px;padding:0 8px;font-size:13px;font-weight:700}
+.bientot{border:4px dashed #b9cbe0;border-radius:24px;padding:14px 18px;color:var(--soft);background:#ffffffa0}
+footer{text-align:center;color:var(--soft);font-size:14px;padding:0 16px 34px}
+footer .tricolore{max-width:260px;margin:0 auto 12px;border-radius:99px}
+</style>
+</head>
+<body>
+<div class="tricolore"></div>
+<section class="hero" aria-hidden="true"></section>
+<header>
+  <div class="titres">
+    <div class="portrait"><img src="images/maitre-pierre-et-amis.jpg" alt="Maître Pierre avec la girafe et le lion"></div>
+    <div class="txt">
+      <h1>Les jeux de <span class="pierre">Maître Pierre</span></h1>
+    </div>
+  </div>
+</header>
+
+<main>
+  <details class="help" open>
+    <summary>👋 Before you play · Avant de jouer</summary>
+    <div class="cols">
+      <div>
+        <h2>ENGLISH</h2>
+        <p style="margin:0 0 6px">Fun games to practice French at home: listen, look and say the words. Games are in French, just like in class!</p>
+        <ul>
+          <li>Turn the sound up 🔊</li>
+          <li>Use Chrome or Safari, on a tablet, phone or computer.</li>
+          <li>For the games marked <span class="badge">🎤 micro</span>, tap “Allow” when the microphone asks (only once).</li>
+          <li>This site does not keep any recording of your child’s voice.</li>
+          <li>The yellow 🏠 button in the corner brings you back to this page.</li>
+          <li>5 to 10 minutes is enough. Encourage, don’t correct. 🌟</li>
+        </ul>
+      </div>
+      <div>
+        <h2>FRANÇAIS</h2>
+        <p style="margin:0 0 6px">Des jeux pour s’entraîner à la maison : écouter, regarder, dire les mots.</p>
+        <ul>
+          <li>Montez le son 🔊</li>
+          <li>Utilisez Chrome ou Safari, sur tablette, téléphone ou ordinateur.</li>
+          <li>Pour les jeux avec le badge <span class="badge">🎤 micro</span>, appuyez sur « Autoriser » quand le micro le demande (une seule fois).</li>
+          <li>Le site ne garde aucun enregistrement de la voix de votre enfant.</li>
+          <li>Le bouton jaune 🏠 dans le coin ramène à cette page.</li>
+          <li>5 à 10 minutes suffisent. On encourage, on ne corrige pas. 🌟</li>
+        </ul>
+      </div>
+    </div>
+  </details>
+
+  <div id="site"></div>
+</main>
+<footer>
+  <div class="tricolore"></div>
+</footer>
+
+<script>
+/* Pour ajouter un jeu : copier son fichier dans le dossier « jeux », puis ajouter une ligne ci-dessous.
+   t = titre, d = phrase en anglais, i = icône, f = fichier, mic:true si le jeu utilise le micro. */
+const DOMAINES = [
+  { nom: "Vocabulaire", en: "Vocabulary", ico: "💬", c: "#2f80d1", cd: "#1f5f9e", bg: "#e3f1ff", groupes: [
+    { titre: "Album : La sorcière dans les airs", jeux: [
+      { t: "Dis le mot", d: "Look at the picture, listen, and say the word.", i: "🧹", f: "dis-le-mot-sorciere.html", mic: true },
+      { t: "Trouve l'image", d: "Listen to the word and tap the right picture.", i: "🖼️", f: "trouve-image-sorciere.html" }
+    ]},
+    { titre: "Album : Le loup qui voulait faire le tour du monde", jeux: [
+      { t: "Dis le mot", d: "Look at the picture, listen, and say the word.", i: "🐺", f: "dis-le-mot-loup.html", mic: true },
+      { t: "Trouve le mot", d: "Listen to the word and tap the right picture.", i: "🌍", f: "trouve-le-mot-loup.html" }
+    ]},
+    { titre: "Apprenti Langue : l'école", en: "school words", jeux: [
+      { t: "Je dis le mot", d: "Look at the picture, listen, and say the word.", i: "🎒", f: "je-dis-le-mot-ecole.html", mic: true },
+      { t: "Trouve le bon objet", d: "Listen to the school word and find the picture.", i: "✏️", f: "trouve-le-bon-objet.html" }
+    ]},
+    { titre: "Apprenti Langue : les émotions", en: "feelings", jeux: [
+      { t: "Je dis les émotions", d: "Look at the photo and say the feeling.", i: "😄", f: "je-dis-les-emotions.html", mic: true },
+      { t: "Jeu des émotions", d: "Listen to the feeling and tap the right photo.", i: "🥹", f: "jeu-des-emotions.html" }
+    ]},
+    { titre: "Sortie : le George Ranch", en: "field trip", jeux: [
+      { t: "Jeu du ranch", d: "Listen to the ranch word and find the picture.", i: "🤠", f: "jeu-du-ranch.html" }
+    ]}
+  ]},
+  { nom: "Langage oral", en: "Speaking French", ico: "🗣️", c: "#d9487d", cd: "#a82f5c", bg: "#ffe4ee", groupes: [
+    { titre: "Se présenter", en: "introducing yourself", jeux: [
+      { t: "Apprendre à se présenter", d: "Chat with Arthur or Louise: say hello, your name and your age in French.", i: "👋", f: "je-me-presente.html", mic: true }
+    ]}
+  ]},
+  { nom: "Lecture et sons", en: "Reading and sounds", ico: "📖", c: "#f08a24", cd: "#b8640f", bg: "#fff0dc", groupes: [
+    { titre: "Syllabes", en: "syllables", jeux: [
+      { t: "Jeu des syllabes", d: "Listen to the syllable and find it.", i: "🔤", f: "jeu-des-syllabes.html" }
+    ]},
+    { titre: "Mots", en: "words", jeux: [
+      { t: "Je lis", d: "Read the syllables and words out loud.", i: "📚", f: "je-lis.html", mic: true }
+    ]}
+  ]},
+  { nom: "Mathématiques", en: "Maths", ico: "🔢", c: "#2fa36b", cd: "#1f7a4f", bg: "#dff6ea", groupes: [
+    { titre: "Les nombres", en: "numbers", jeux: [
+      { t: "Écoute et trouve le nombre", d: "Listen to the number and tap the right card.", i: "🎲", f: "ecoute-trouve-nombre.html" }
+    ]},
+    { titre: "Les formes", en: "shapes", jeux: [
+      { t: "Les formes", d: "Discover flat shapes and solids, then tap the shape you hear.", i: "🔺", f: "formes/jeu-formes.html" }
+    ]},
+    { titre: "Les motifs répétitifs", en: "patterns", jeux: [
+      { t: "Motifs des oursons", d: "Look at the row of bears and continue it.", i: "🧸", f: "motifs-oursons.html" }
+    ]}
+  ]}
+];
+
+const root = document.getElementById("site");
+const el = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
+for (const dom of DOMAINES) {
+  const s = el("section", "domaine");
+  s.style.setProperty("--c", dom.c); s.style.setProperty("--cd", dom.cd); s.style.setProperty("--bg", dom.bg);
+  const h2 = el("h2");
+  h2.appendChild(el("span", "pastille", dom.ico));
+  const wrap = el("span", null, dom.nom);
+  wrap.appendChild(el("small", null, dom.en));
+  h2.appendChild(wrap);
+  s.appendChild(h2);
+  for (const g of dom.groupes) {
+    const h3 = el("h3", null, g.titre);
+    if (g.en) { h3.appendChild(document.createTextNode(" ")); h3.appendChild(el("small", null, "· " + g.en)); }
+    s.appendChild(h3);
+    if (g.bientot) { s.appendChild(el("div", "bientot", g.bientot)); continue; }
+    const grid = el("div", "grid");
+    for (const j of g.jeux) {
+      const a = el("a", "jeu");
+      a.href = "jeux/" + j.f;
+      a.appendChild(el("span", "ico", j.i));
+      const txt = el("span", "txt");
+      txt.appendChild(el("span", "t", j.t));
+      txt.appendChild(el("span", "d", j.d));
+      a.appendChild(txt);
+      if (j.mic) a.appendChild(el("span", "mic", "🎤 micro"));
+      grid.appendChild(a);
+    }
+    s.appendChild(grid);
+  }
+  root.appendChild(s);
+}
+
+</script>
+</body>
+</html>

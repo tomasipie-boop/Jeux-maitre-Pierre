@@ -1,0 +1,19 @@
+SITE DES JEUX DE MAITRE PIERRE (version GitHub Pages)
+=====================================================
+
+Contenu du depot (tout est a la racine)
+  index.html   page d'accueil (domaines et albums)
+  jeux/        un fichier par jeu
+  images/      decor-france.jpg, maitre-pierre-et-amis.jpg
+  .nojekyll    fichier vide, a laisser (dit a GitHub de publier tel quel)
+
+Mettre a jour
+  1. Ouvrir le depot sur github.com, cliquer sur Add file > Upload files.
+  2. Glisser les fichiers modifies (dans le bon dossier : jeux/ pour un jeu).
+  3. Cliquer sur Commit changes. Le site se met a jour en 1 a 2 minutes.
+  L'adresse ne change pas. Le micro exige https : c'est automatique.
+
+Ajouter un jeu
+  1. Deposer le fichier du jeu dans le dossier jeux.
+  2. Modifier index.html (liste DOMAINES) : ajouter une ligne
+     { t: "Titre", d: "Phrase courte", i: "🎤", f: "nom-du-fichier.html" }
